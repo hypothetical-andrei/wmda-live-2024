@@ -1,6 +1,8 @@
 import data_sample
 import distances
 import transform
+import json
+from json.decoder import JSONDecodeError
 
 def top_matches(prefs, me, n = 5, similarity=distances.euclidean_distance):
   scores = [(similarity(prefs, me, other), other) for other in prefs if other != me]
@@ -40,7 +42,13 @@ def main():
   # recommendations = get_recommendations(data, 'Toby', n = 3)
   # print(recommendations)
   item_data = transform.tranform_prefs(data)
-  print(get_similar_items(item_data))
+  try:
+    with open('items.json') as f:
+      item_similarities = json.loads(f.read())
+  except (FileNotFoundError, JSONDecodeError):
+    item_similarities = get_similar_items(item_data)
+    with open('items.json', 'w') as f:
+      f.write(json.dumps(item_similarities))
 
 if __name__ == '__main__':
   main()
