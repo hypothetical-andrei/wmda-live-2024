@@ -4,6 +4,10 @@ def euclidean_distance(v1, v2):
   sum_squares = sum([(x - y) ** 2 for (x, y) in zip(v1, v2)])
   return sqrt(sum_squares)
 
+def euclidean_inverse(v1, v2):
+  sum_squares = sum([(x - y) ** 2 for (x, y) in zip(v1, v2)])
+  return 1 / (1 + sqrt(sum_squares))
+
 def main():
   sample_v1 = [1, 2, 3, 4, 5]
   sample_v2 = [2, 3, 4, 5, 6]
