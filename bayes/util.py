@@ -37,6 +37,20 @@ def get_spam_features_sk(filename):
       results.append(result)
   return results
 
+def get_car_features(filename):
+  results = []
+  with open(f"{filename}.data") as f:
+    for line in f.readlines():
+      items = line.split(',')
+      classification = items[-1]
+      items = items[:-1]
+      result = {
+        'features': items,
+        'outcome': classification
+      }
+      results.append(result)
+  return results
+
 def main():
   results = get_spam_features_sk('spambase')
   print(results[:3])

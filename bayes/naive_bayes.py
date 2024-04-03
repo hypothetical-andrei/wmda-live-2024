@@ -59,10 +59,11 @@ class NaiveBayesClassifier(Classifier):
     return best_cat
 
 def main():
-  messages = util.get_spam_features('spambase')
-  random.shuffle(messages)
-  samples = messages[100:]
-  tests = messages[:100]
+  # messages = util.get_spam_features('spambase')
+  car_data = util.get_car_features('car')
+  random.shuffle(car_data)
+  samples = car_data[100:]
+  tests = car_data[:100]
   classifier = NaiveBayesClassifier(get_features=util.get_features)
   for item in samples:
     classifier.train(item, item['outcome'])
@@ -72,6 +73,18 @@ def main():
     if result == item['outcome']:
       correct += 1
   print(f"correct: {correct} / 100")
+  # random.shuffle(messages)
+  # samples = messages[100:]
+  # tests = messages[:100]
+  # classifier = NaiveBayesClassifier(get_features=util.get_features)
+  # for item in samples:
+  #   classifier.train(item, item['outcome'])
+  # correct = 0
+  # for item in tests:
+  #   result = classifier.classify(item)
+  #   if result == item['outcome']:
+  #     correct += 1
+  # print(f"correct: {correct} / 100")
 
 if __name__ == '__main__':
   main()
