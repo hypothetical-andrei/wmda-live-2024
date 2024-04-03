@@ -1,6 +1,6 @@
 import distances
 import loaders
-
+from PIL import Image, ImageDraw
 class ClusterNode:
   def __init__(self, vec, left = None, right = None, distance = 0.0, id = None):
     self.left = left
@@ -49,12 +49,49 @@ def print_cluster(node, labels=None, n=0):
   if node.right != None:
     print_cluster(node.right, labels=labels, n=n+1)
 
+def get_height(cluster):
+  if cluster.left == None and cluster.right == None:
+    return 1
+  else:
+    return get_height(cluster.left) + get_height(cluster.right)
+
+def get_depth(cluster):
+  if cluster.left == None and cluster.right == None:
+    return 0
+  return max(get_depth(cluster.left), get_depth(cluster.right)) + cluster.distance
+
+def draw_node(draw, cluster, x, y, scaling, labels):
+  if cluster.id < 0:
+    hl = get_height(cluster.left) * 20
+    hr = get_height(cluster.right) * 20
+    top = y - (hl + hr) / 2
+    bottom = y + (hl + hr) / 2
+    line_length = cluster.distance * scaling
+    draw.line((x, top + hl / 2, x, bottom - hr / 2 ), fill=(255, 0, 0))
+    draw.line((x, top + hl / 2, x + line_length, top + hl / 2 ), fill=(255, 0, 0))
+    draw.line((x, bottom - hr / 2, x + line_length, bottom - hr / 2 ), fill=(255, 0, 0))
+    draw_node(draw, cluster.left, x + line_length, top + hl / 2, scaling, labels)
+    draw_node(draw, cluster.right, x + line_length, bottom - hr / 2, scaling, labels)
+  else:
+    draw.text((x + 5, y - 7), labels[cluster.id], (0, 0, 0))
+
+def draw_tree(cluster, labels, jpeg='hcluster.jpg'):
+  h = get_height(cluster) * 20
+  w = 1200
+  depth = get_depth(cluster)
+  scaling = float(w - 300) / depth
+  img = Image.new('RGB', (w, h), (255, 255, 255))
+  draw = ImageDraw.Draw(img)
+  draw.line((0, h / 2, 10, h / 2), fill=(255, 0, 0))
+  draw_node(draw, cluster, 10, h / 2, scaling, labels)
+  img.save(jpeg, 'JPEG')
 
 def main():
   col_name, row_names, data = loaders.load_blog_data()
   root = hcluster(data)
   print_cluster(root, labels=row_names)
   # print_cluster(root)
+  draw_tree(root, labels=row_names)
 
 if __name__ == '__main__':
   main()
