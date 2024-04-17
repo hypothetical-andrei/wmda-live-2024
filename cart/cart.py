@@ -1,5 +1,6 @@
 import loaders
 from math import log
+import random
 
 def unique_counts(rows):
   results = {}
@@ -73,10 +74,40 @@ def print_tree(node, indent = ''):
     print(indent, 'False -> ', end = '')
     print_tree(node.false_subtree, indent=indent + '  ')
 
+def classify(item, node):
+  if node.results != None:
+    return node.results
+  else:
+    value = item[node.col]
+    if isinstance(value, int) or isinstance(value, float):
+      if value >= node.value:
+        print(f'decision {node.col} >= {value}')
+        branch = node.true_subtree
+      else:
+        print(f'decision {node.col} < {value}')
+        branch = node.false_subtree        
+    else:
+      if value == node.value:
+        print(f'decision {node.col} == {value}')
+        branch = node.true_subtree
+      else:
+        print(f'decision {node.col} != {value}')
+        branch = node.false_subtree
+    return classify(item, branch)     
+
 def main():
   data = loaders.get_car_data()
-  tree = build_tree(data)
-  print_tree(tree)
+  random.shuffle(data)
+  test_data = data[:100]
+  train_data = data[100:]
+  tree = build_tree(train_data)
+  # print_tree(tree)
+  correct_count = 0
+  for item in test_data:
+    result = classify(item, tree)
+    if item[-1] in result and len(result.keys()) == 1:
+      correct_count += 1
+  print(f"{correct_count} / 100")
 
 if __name__ == '__main__':
   main()
